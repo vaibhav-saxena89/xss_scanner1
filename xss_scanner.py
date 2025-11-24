@@ -12,15 +12,7 @@ import re
 from urllib.parse import urlparse, parse_qsl, urlencode
 
 class PayloadGenerator:
-    """
-    Generates payloads adapted for different injection contexts.
-
-    Supported contexts:
-    - attribute-name: payload intended to show up inside an attribute name (e.g. "<div PAYLOAD='x'>")
-    - attribute-value: payload intended to appear in attribute value (e.g. <input value="PAYLOAD">)
-    - text-node: payload intended to appear inside page text nodes
-    - js: payload intended to appear inside JS contexts (e.g., inside <script> or event handler)
-    """
+    
 
     def __init__(self, randomize=True, marker_base="P"):
         self.randomize = randomize
@@ -36,10 +28,7 @@ class PayloadGenerator:
         return f"{self.marker_base}_{label}_{self._rand(5)}"
 
     def payloads_for(self, context):
-        """
-        Return a list of payload strings for the given context.
-        Each payload includes a unique marker so we can detect exact reflections.
-        """
+        
         ctx = context.lower()
         if ctx == "attribute-name":
             
@@ -99,10 +88,7 @@ class ReflectedXSSScanner:
             self.session.cookies.update(self.cookies)
 
     def _inject_param_value(self, base_params, param_to_inject, injection_value):
-        """
-        Construct query params dict (for GET) or form-data dict (for POST) with injection_value
-        inserted for param_to_inject, while preserving other params from base_params dict.
-        """
+        
         params = dict(base_params)  
         params[param_to_inject] = injection_value
         return params
@@ -128,14 +114,7 @@ class ReflectedXSSScanner:
             return e
 
     def _detect_reflection(self, response_text, injected_token):
-        """
-        Basic detection: substring search. Also attempt a heuristic classification:
-        - attribute-name: look for token followed by '=' or whitespace before '=' within a tag
-        - attribute-value: look for token inside quotes within a tag
-        - text-node: token appears outside tags
-        - js: token appears inside <script>...</script>
-        Returns (found_bool, guessed_contexts_list)
-        """
+        
         if not isinstance(response_text, str):
             return False, []
         found = injected_token in response_text
@@ -177,19 +156,16 @@ class ReflectedXSSScanner:
                 
                 guesses.append("text-node")
 
-        # dedupe
+        
         guesses = list(dict.fromkeys(guesses))
         return True, guesses
 
     def _scan_param_context(self, param, context):
-        """
-        For a single parameter and context, generate payloads, inject them, send requests,
-        and collect detection results.
-        """
+        
         findings = []
         payloads = self.payload_gen.payloads_for(context)
         for payload in payloads:
-            # construct injection param dict: keep non-tested params blank or carry from provided data
+            
             base_params = {}
             
             injection_token = payload
@@ -237,7 +213,7 @@ class ReflectedXSSScanner:
         start = max(0, idx - radius)
         end = min(len(body), idx + len(token) + radius)
         snippet = body[start:end]
-        # escape for HTML later
+        
         return snippet.replace("\n", " ").replace("\r", " ")
 
     def run(self):
@@ -290,9 +266,7 @@ class ReflectedXSSScanner:
 
 
 def parse_headers_cookie(s):
-    """
-    Parse header/cookie input like 'Key: Value;Key2:Value2' into a dict
-    """
+    
     if not s:
         return {}
     items = re.split(r"[;|,]\s*", s)
