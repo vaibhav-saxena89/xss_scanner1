@@ -1,27 +1,3 @@
-
-"""
-xss_scanner.py
-A small reflected XSS scanner satisfying the VipraTech assignment requirements.
-
-Hard requirements implemented:
-- Python-based
-- PayloadGenerator class that varies payloads by context (attribute-name, attribute-value, text-node, js)
-- Detect reflections via substring matching
-- Supports GET and POST
-- Produces a simple HTML report (report.html)
-- Handles >=3 injection contexts (attribute-name, attribute-value, text-node) — plus js-context
-
-Nice-to-have implemented:
-- Basic context auto-detection heuristics
-- Parallel scanning using ThreadPoolExecutor
-- Custom headers & cookies support via CLI options
-- Payload randomization ("filter bypass" by adding random token)
-
-Limitations:
-- Detection is based on substring search and a simple heuristic to guess context;
-  robust parsing would require an HTML parser-aware sink analysis (out of scope).
-"""
-
 import argparse
 import requests
 import threading
